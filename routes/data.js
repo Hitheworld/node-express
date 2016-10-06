@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 
-var PATH = './public/data/'
+var PATH = './public/data/';
 
 //读取数据模块
 //data/read?type=it
@@ -38,6 +38,12 @@ router.get('/read', function(req, res, next) {
 
 //数据存储模块
 router.post('/write', function(req, res, next){
+	if(!req.session.user){
+		return res.send({
+			status: 0,
+			info: '未鉴权认证'
+		});
+	}
     //文件名
     var type = req.param('type') || '';
     //关键字段
@@ -89,6 +95,12 @@ router.post('/write', function(req, res, next){
 
 //阅读模块写入接口
 router.post('/write_config', function(req, res, next){
+	if(!req.session.user){
+		return res.send({
+			status: 0,
+			info: '未鉴权认证'
+		});
+	}
     //TODO: 后期进行提交数据的验证
     //防xss攻击
     // npm install xss --save
@@ -111,7 +123,34 @@ router.post('/write_config', function(req, res, next){
             info: obj
         });
     });
-})
+});
+
+
+//登录接口
+router.post('/login', function(req, res, next){
+	//用户名，密码，验证码
+	var username = req.body.username;
+	var password = req.body.password;
+
+	//TODO：对用户名，密码进行校验
+	//xss处理，判空
+
+	//密码加密，md5(password + '随机字符串')
+	//密码需要加密后可以写入json文件
+	if(username === 'admin' && password === '123456'){
+		req.session.user = {
+			username: username
+		};
+		return res.send({
+			status: 1
+		});
+
+		return res.send({
+			status: 0,
+			info: '登录失败'
+		});
+	}
+});
 
 //guid
 function guidGenerate() {

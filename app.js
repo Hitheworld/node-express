@@ -5,6 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var session = require('express-session');
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var users = require('./routes/data');
@@ -23,6 +25,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
+
+//可以参考https://github.com/vczero/toilet/tree/master/service
+app.use(session({
+	secret: '#sddjswjdhww22ygfw2233@@@%#$!@%Q!%*12',
+	resave: false,
+	saveUninitialized: true
+}));
 
 app.use('/', routes);
 app.use('/users', users);
