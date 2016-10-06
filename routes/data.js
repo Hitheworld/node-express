@@ -59,42 +59,30 @@ router.post('/write', function(req, res, next){
                 info: '读取文件失败!'
             });
         }
-    });
-    var arr = JSON.parse(data.toString());
-    //代表每一条记录
-    var obj = {
-        img: img,
-        url: url,
-        title: title,
-        id: guidGenerate(),
-        time: new Date()
-    }
-    arr.splice(0, 0, obj);
-    //（2）写入文件
-    var newData = JSON.stringify(arr);
-    fs.writeFile(filePath, newData, function(err){
-        if(err){
-            return res.send({
-                status: 0,
-                info: '读取文件失败!'
-            });
-        }
-
-        var COUNT = 50;
-        //TODO: try
-        var obj = [];
-        try{
-            obj = JSON.parse(data.toString());
-        }catch(e){
-            obj = [ ];
-        }
-        if(obj.length > COUNT){
-            obj = obj.slice(0, COUNT);
-        }
-        return res.send({
-            status: 1,
-            data: obj
-        });
+	    var arr = JSON.parse(data.toString());
+	    //代表每一条记录
+	    var obj = {
+		    img: img,
+		    url: url,
+		    title: title,
+		    id: guidGenerate(),
+		    time: new Date()
+	    };
+	    arr.splice(0, 0, obj);
+	    //（2）写入文件
+	    var newData = JSON.stringify(arr);
+	    fs.writeFile(filePath, newData, function(err){
+		    if(err){
+			    return res.send({
+				    status: 0,
+				    info: '写入文件失败!'
+			    });
+		    }
+		    return res.send({
+			    status: 1,
+			    data: obj
+		    });
+	    });
     });
 });
 
@@ -128,7 +116,7 @@ router.post('/write_config', function(req, res, next){
 //guid
 function guidGenerate() {
     return 'xxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c){
-        var r = Math.rendom() * 16 | 0,
+        var r = Math.random() * 16 | 0,
             v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     }).toUpperCase();
