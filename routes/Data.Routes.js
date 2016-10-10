@@ -4,37 +4,38 @@ var fs = require('fs');
 var xss = require('xss');
 var _ = require("underscore");
 
-var Data = require("./models/data.models");
+var Data = require("../models/data.models");
 var guidGenerate = require('../utils/GuidGenerate');
 
 var PATH = './public/data/';
 
 
 /*后台管理-详情页-添加数据*/
-app.get("/admin/movie",function(req,res){
-	res.render("admin",{
-		title:"后台管理-录入",
-		movie:{
-			img: "",
-			url: "",
-			title: "",
-			id: "",
-			time: ""
-		}
-	});
-});
+//router.get("/admin/movie",function(req,res){
+//	res.render({
+//		status: 1,
+//		Data:{
+//			img: "",
+//			url: "",
+//			title: "",
+//			id: "",
+//			time: ""
+//		}
+//	});
+//});
 
 
 // admin post movie
-app.post("/write/type/:type",function(req,res){
+router.post("/write/type/:type",function(req,res){
 	var type = req.params.type;
 	// 判断是否是新加或者是更新的数据
 	var id = req.body.movie._id;
 	var movieObj = req.body.data;
+    console.log(movieObj)
 	var _movie;
 
 	if(id !== "undefined"){
-		Movie.findById(id, function(err, movie){
+        Data.findById(id, function(err, movie){
 			if(err){
 				console.log(err);
 			}
@@ -73,7 +74,7 @@ app.post("/write/type/:type",function(req,res){
 });
 
 //读取数据模块
-app.get("/read/type/:type",function(req,res){
+router.get("/read/type/:type",function(req,res){
 	var type = req.params.type;
 	Data.fetch(function(err,data){
 		if(err){

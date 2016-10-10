@@ -48,11 +48,11 @@
 		<%for(var i in data){%>
 		<tr style="text-align:center;height:26px;color:#4C4C4C;">
 			<td width="10px;"><%=(parseInt(i)+1)%></td>
-			<td><%=data[i]._id%></td>
-			<td><%=data[i].title%></td>
-			<td><%=data[i].img%></td>
-			<td><%=data[i].url%></td>
-			<td><%=data[i].time%></td>
+			<td><%=data._id%></td>
+			<td><%=data.title%></td>
+			<td><%=data.img%></td>
+			<td><%=data.url%></td>
+			<td><%=data.time%></td>
 		</tr>
 		<%}%>
 	</table>
