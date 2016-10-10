@@ -4,7 +4,9 @@ var fs = require('fs');
 var xss = require('xss');
 var _ = require("underscore");
 
+var Data = require("./models/data.models");
 var guidGenerate = require('../utils/GuidGenerate');
+
 var PATH = './public/data/';
 
 
@@ -24,10 +26,11 @@ app.get("/admin/movie",function(req,res){
 
 
 // admin post movie
-app.post("/admin/movie/new",function(req,res){
+app.post("/write/type/:type",function(req,res){
+	var type = req.params.type;
 	// 判断是否是新加或者是更新的数据
 	var id = req.body.movie._id;
-	var movieObj = req.body.movie;
+	var movieObj = req.body.data;
 	var _movie;
 
 	if(id !== "undefined"){
@@ -44,13 +47,13 @@ app.post("/admin/movie/new",function(req,res){
 				}
 
 				//重定向到详情页面
-				res.redirect("/movie/"+movie._id);
+				res.redirect("/write/type/"+type);
 			});
 		});
 	} else {
 
 		// 新加的数据
-		_movie = new Movie({
+		_movie = new Data({
 			img: movieObj.img,
 			url: movieObj.url,
 			title: movieObj.title,
@@ -64,97 +67,113 @@ app.post("/admin/movie/new",function(req,res){
 			}
 
 			//重定向到详情页面
-			res.redirect("/movie/"+movie._id);
+			res.redirect("/write/type/"+type);
 		});
 	}
 });
 
 //读取数据模块
-//data/read/it
-router.get('/read/type/:type', function(req, res, next) {
-    var type = req.params.type || '';
-    fs.readFile(PATH + type + '.json', function(err, data){
-        if(err){
-            return res.send({
-                status: 0,
-                info: '读取文件失败!'
-            });
-        }
+app.get("/read/type/:type",function(req,res){
+	var type = req.params.type;
+	Data.fetch(function(err,data){
+		if(err){
+			console.log(err)
+		}
 
-        var COUNT = 50;
-        //TODO: try
-        var obj = [];
-        try{
-            obj = JSON.parse(data.toString());
-        }catch(e){
-            obj = [ ];
-        }
-        if(obj.length > COUNT){
-            obj = obj.slice(0, COUNT);
-        }
-        return res.send({
-            status: 1,
-            data: obj
-        });
-    });
-});
-
-
-//数据存储模块
-router.post('/write/type/:type', function(req, res, next){
-	if(!req.session.user){
-		return res.send({
-			status: 0,
-			info: '未鉴权认证'
+		//渲染页面
+		res.render({
+			status: 1,
+			data: data
 		});
-	}
-    //文件名
-    var type = req.params.type || '';
-    //关键字段
-    var url = req.param('url') || '';
-    var title = req.param('title') || '';
-    var img = req.param('img') || '';
-    if(!type || !url || !title || !img){
-        return res.send({
-            status: 0,
-            info: '提交的字段不全'
-        });
-    }
-    //(1)读取文件
-    var filePath = PATH + type + '.json';
-    fs.readFile(filePath, function(err, data){
-        if(err){
-            return res.send({
-                status: 0,
-                info: '读取文件失败!'
-            });
-        }
-	    var arr = JSON.parse(data.toString());
-	    //代表每一条记录
-	    var obj = {
-		    img: xss(img),
-		    url: xss(url),
-		    title: xss(title),
-		    id: guidGenerate(),
-		    time: new Date()
-	    };
-	    arr.splice(0, 0, obj);
-	    //（2）写入文件
-	    var newData = JSON.stringify(arr);
-	    fs.writeFile(filePath, newData, function(err){
-		    if(err){
-			    return res.send({
-				    status: 0,
-				    info: '写入文件失败!'
-			    });
-		    }
-		    return res.send({
-			    status: 1,
-			    data: obj
-		    });
-	    });
-    });
+	});
 });
+
+////读取数据模块
+////data/read/it
+//router.get('/read/type/:type', function(req, res, next) {
+//    var type = req.params.type || '';
+//    fs.readFile(PATH + type + '.json', function(err, data){
+//        if(err){
+//            return res.send({
+//                status: 0,
+//                info: '读取文件失败!'
+//            });
+//        }
+//
+//        var COUNT = 50;
+//        //TODO: try
+//        var obj = [];
+//        try{
+//            obj = JSON.parse(data.toString());
+//        }catch(e){
+//            obj = [ ];
+//        }
+//        if(obj.length > COUNT){
+//            obj = obj.slice(0, COUNT);
+//        }
+//        return res.send({
+//            status: 1,
+//            data: obj
+//        });
+//    });
+//});
+
+
+////数据存储模块
+//router.post('/write/type/:type', function(req, res, next){
+//	if(!req.session.user){
+//		return res.send({
+//			status: 0,
+//			info: '未鉴权认证'
+//		});
+//	}
+//    //文件名
+//    var type = req.params.type || '';
+//    //关键字段
+//    var url = req.param('url') || '';
+//    var title = req.param('title') || '';
+//    var img = req.param('img') || '';
+//    if(!type || !url || !title || !img){
+//        return res.send({
+//            status: 0,
+//            info: '提交的字段不全'
+//        });
+//    }
+//    //(1)读取文件
+//    var filePath = PATH + type + '.json';
+//    fs.readFile(filePath, function(err, data){
+//        if(err){
+//            return res.send({
+//                status: 0,
+//                info: '读取文件失败!'
+//            });
+//        }
+//	    var arr = JSON.parse(data.toString());
+//	    //代表每一条记录
+//	    var obj = {
+//		    img: xss(img),
+//		    url: xss(url),
+//		    title: xss(title),
+//		    id: guidGenerate(),
+//		    time: new Date()
+//	    };
+//	    arr.splice(0, 0, obj);
+//	    //（2）写入文件
+//	    var newData = JSON.stringify(arr);
+//	    fs.writeFile(filePath, newData, function(err){
+//		    if(err){
+//			    return res.send({
+//				    status: 0,
+//				    info: '写入文件失败!'
+//			    });
+//		    }
+//		    return res.send({
+//			    status: 1,
+//			    data: obj
+//		    });
+//	    });
+//    });
+//});
 
 
 //阅读模块写入接口
