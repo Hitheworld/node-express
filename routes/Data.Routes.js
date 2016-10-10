@@ -2,9 +2,72 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var xss = require('xss');
+var _ = require("underscore");
 
 var guidGenerate = require('../utils/GuidGenerate');
 var PATH = './public/data/';
+
+
+/*后台管理-详情页-添加数据*/
+app.get("/admin/movie",function(req,res){
+	res.render("admin",{
+		title:"后台管理-录入",
+		movie:{
+			img: "",
+			url: "",
+			title: "",
+			id: "",
+			time: ""
+		}
+	});
+});
+
+
+// admin post movie
+app.post("/admin/movie/new",function(req,res){
+	// 判断是否是新加或者是更新的数据
+	var id = req.body.movie._id;
+	var movieObj = req.body.movie;
+	var _movie;
+
+	if(id !== "undefined"){
+		Movie.findById(id, function(err, movie){
+			if(err){
+				console.log(err);
+			}
+
+			//替换老的数据
+			_movie = _.extend(movie, movieObj);
+			_movie.save(function(err, movie){
+				if(err){
+					console.log(err);
+				}
+
+				//重定向到详情页面
+				res.redirect("/movie/"+movie._id);
+			});
+		});
+	} else {
+
+		// 新加的数据
+		_movie = new Movie({
+			img: movieObj.img,
+			url: movieObj.url,
+			title: movieObj.title,
+			id: movieObj.id,
+			time: movieObj.time
+		});
+
+		_movie.save(function(err,movie){
+			if(err){
+				console.log(err);
+			}
+
+			//重定向到详情页面
+			res.redirect("/movie/"+movie._id);
+		});
+	}
+});
 
 //读取数据模块
 //data/read/it
