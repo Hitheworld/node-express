@@ -23,11 +23,11 @@ router.get('/tuijian', function(req, res, next) {
 	res.render('tuijian', {});
 });
 
-router.get('/edit', function(req, res, next) {
+router.get('/edit/type/:type', function(req, res, next) {
 	if(!req.session.user){
 		return res.render('login', {});
 	}
-	var type = req.query.type;
+	var type = req.params.type;
 	if(type){
 		var obj = {};
 		switch (type){

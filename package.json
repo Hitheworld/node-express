@@ -14,7 +14,9 @@
     "express-session": "^1.14.1",
     "less-middleware": "1.0.x",
     "morgan": "~1.7.0",
+    "redis": "^2.6.2",
     "serve-favicon": "~2.3.0",
-    "supervisor": "^0.11.0"
+    "supervisor": "^0.11.0",
+    "xss": "^0.2.13"
   }
 }

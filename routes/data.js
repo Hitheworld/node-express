@@ -1,14 +1,14 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+var xss = require('xss');
 
 var PATH = './public/data/';
 
 //读取数据模块
-//data/read?type=it
-//data/read?type=it.json
-router.get('/read', function(req, res, next) {
-    var type = req.param('type') || '';
+//data/read/it
+router.get('/read/type/:type', function(req, res, next) {
+    var type = req.params.type || '';
     fs.readFile(PATH + type + '.json', function(err, data){
         if(err){
             return res.send({
@@ -37,7 +37,7 @@ router.get('/read', function(req, res, next) {
 
 
 //数据存储模块
-router.post('/write', function(req, res, next){
+router.post('/write/type/:type', function(req, res, next){
 	if(!req.session.user){
 		return res.send({
 			status: 0,
@@ -45,7 +45,7 @@ router.post('/write', function(req, res, next){
 		});
 	}
     //文件名
-    var type = req.param('type') || '';
+    var type = req.params.type || '';
     //关键字段
     var url = req.param('url') || '';
     var title = req.param('title') || '';
@@ -68,9 +68,9 @@ router.post('/write', function(req, res, next){
 	    var arr = JSON.parse(data.toString());
 	    //代表每一条记录
 	    var obj = {
-		    img: img,
-		    url: url,
-		    title: title,
+		    img: xss(img),
+		    url: xss(url),
+		    title: xss(title),
 		    id: guidGenerate(),
 		    time: new Date()
 	    };
@@ -108,7 +108,7 @@ router.post('/write_config', function(req, res, next){
     // var str = xss(name);
     var data = req.body.data;
     //TODO: try catch
-    var obj = JSON.parse(data);
+    var obj = JSON.parse(xss(data));
     var newData = JSON.stringify(obj);
     //写入文件
     fs.writeFile(PATH + 'config.json', newData, function(err){
@@ -129,8 +129,8 @@ router.post('/write_config', function(req, res, next){
 //登录接口
 router.post('/login', function(req, res, next){
 	//用户名，密码，验证码
-	var username = req.body.username;
-	var password = req.body.password;
+	var username = xss(req.body.username);
+	var password = xss(req.body.password);
 
 	//TODO：对用户名，密码进行校验
 	//xss处理，判空

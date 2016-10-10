@@ -282,7 +282,7 @@
 
 		$.ajax({
 			type: 'POST',
-			url: '/data/write_config',
+			url: '/api/write_config',
 			data: {data: JSON.stringify(obj)},
 			success: function(data){
 				if(data.status){
