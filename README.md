@@ -2,15 +2,20 @@
 
 ![Alt text](./docs/index.png)
 
-git clone https://github.com/Hitheworld/node-express.git
+## git clone https://github.com/Hitheworld/node-express.git
 
 npm install 
 
-自动更新
-npm install -g supervisor
+# db data
+## windows:
+### install mongodb
+mongodb https://www.mongodb.com/
 
-run:
-supervisor ./bin/www
+# node update
+## npm install -g supervisor
 
-or run:
-npm start
+# run:
+## supervisor ./bin/www
+
+# or run:
+## npm start
