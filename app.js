@@ -18,6 +18,17 @@ var app = express();
 //db
 mongoose.connect("mongodb://127.0.0.1:27017/thihibook");
 
+//测试mongodb连接
+mongoose.connection.on('connected', function(){
+	console.log('连接成功！');
+});
+mongoose.connection.on('error', function(err){
+	console.log('连接错误: ' + err);
+});
+mongoose.connection.on('disconnected', function(){
+	console.log('连接断开!');
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

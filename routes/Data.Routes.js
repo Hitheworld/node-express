@@ -1,17 +1,22 @@
+/**
+ * 数据接口API
+ * @type {*|exports|module.exports}
+ */
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var xss = require('xss');
 var _ = require("underscore");
+//var bodyParser = require('body-parser');
+//
+//router.use(bodyParser.json());
+//router.use(bodyParser.urlencoded({ extended: true }));
 
-var Data = require("../models/data.models");
+var Data = require("../models/data.model");
 var guidGenerate = require('../utils/guid.util');
 
-var PATH = './public/data/';
-
-
 /*后台管理-详情页-添加数据*/
-router.get("/write/type/:type",function(req,res){
+router.get("/write/type",function(req,res){
 	if(!req.session.user){
 		return res.send({
 			status: 0,
@@ -33,64 +38,68 @@ router.get("/write/type/:type",function(req,res){
 
 
 // admin post movie
-//router.post("/write/type/:type",function(req,res){
-//	if(!req.session.user){
-//		return res.send({
-//			status: 0,
-//			info: '未鉴权认证'
-//		});
-//	}
-//	var type = req.params.type;
-//	// 判断是否是新加或者是更新的数据
-//	var id = req.body.movie._id;
-//	var movieObj = req.body.data;
-//	if(!movieObj ){
-//        return res.send({
-//            status: 0,
-//            info: '提交的字段不全'
-//        });
-//    }
-//
-//	var _movie;
-//
-//	if(id !== "undefined"){
-//        Data.findById(id, function(err, movie){
-//			if(err){
-//				console.log(err);
-//			}
-//
-//			//替换老的数据
-//			_movie = _.extend(movie, movieObj);
-//			_movie.save(function(err, movie){
-//				if(err){
-//					console.log(err);
-//				}
-//
-//				//重定向到详情页面
-//				res.redirect("/write/type/"+type);
-//			});
-//		});
-//	} else {
-//
-//		// 新加的数据
-//		_movie = new Data({
-//			img: movieObj.img,
-//			url: movieObj.url,
-//			title: movieObj.title,
-//			id: movieObj.id,
-//			time: movieObj.time
-//		});
-//
-//		_movie.save(function(err,movie){
-//			if(err){
-//				console.log(err);
-//			}
-//
-//			//重定向到详情页面
-//			res.redirect("/write/type/"+type);
-//		});
-//	}
-//});
+router.post("/write/type/:type",function(req,res){
+	if(!req.session.user){
+		return res.send({
+			status: 0,
+			info: '未鉴权认证'
+		});
+	}
+	var type = req.params.type;
+	console.log("----------------------type++++:", type);
+	// 判断是否是新加或者是更新的数据
+	var id = req.body.data._id;
+	console.log("----------------------_id++++:", id);
+	var movieObj = req.body.data;
+	console.log("----------------------write 22222222");
+	if(!movieObj ){
+        return res.send({
+            status: 0,
+            info: '提交的字段不全'
+        });
+    }
+
+	var _movie;
+
+	if(id !== "undefined"){
+		console.log("----------------------99999");
+        Data.findById(id, function(err, movie){
+			if(err){
+				console.log(err);
+			}
+
+			//替换老的数据
+			_movie = _.extend(movie, movieObj);
+			_movie.save(function(err, movie){
+				if(err){
+					console.log(err);
+				}
+
+				//重定向到详情页面
+				res.redirect("/write/type/"+type);
+			});
+		});
+	} else {
+		console.log("----------------------新增方法");
+		// 新加的数据
+		_movie = new Data({
+			img: movieObj.img,
+			url: movieObj.url,
+			title: movieObj.title,
+			id: movieObj.id,
+			time: movieObj.time
+		});
+
+		_movie.save(function(err,movie){
+			if(err){
+				console.log(err);
+			}
+
+			//重定向到详情页面
+			res.redirect("/write/type/"+type);
+		});
+	}
+});
 
 //读取数据模块
 router.get("/read/type/:type",function(req,res){
