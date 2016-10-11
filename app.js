@@ -11,7 +11,7 @@ var mongoose = require("mongoose");
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var users = require('./routes/data.routes');
+var users = require('./routes/data.routes.js');
 
 var app = express();
 

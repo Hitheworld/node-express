@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");  //引入建模工具模块
 
-var guidGenerate = require('../utils/GuidGenerate');
+var guidGenerate = require('../utils/guid.util');
 
 var DataSchema = new mongoose.Schema({
 	img: String,

@@ -5,73 +5,92 @@ var xss = require('xss');
 var _ = require("underscore");
 
 var Data = require("../models/data.models");
-var guidGenerate = require('../utils/GuidGenerate');
+var guidGenerate = require('../utils/guid.util');
 
 var PATH = './public/data/';
 
 
 /*后台管理-详情页-添加数据*/
-//router.get("/admin/movie",function(req,res){
-//	res.render({
-//		status: 1,
-//		Data:{
-//			img: "",
-//			url: "",
-//			title: "",
-//			id: "",
-//			time: ""
-//		}
-//	});
-//});
+router.get("/write/type/:type",function(req,res){
+	if(!req.session.user){
+		return res.send({
+			status: 0,
+			info: '未鉴权认证'
+		});
+	}
+
+	return res.send({
+		status: 1,
+		data:{
+			img: "",
+			url: "",
+			title: "",
+			id: "",
+			time: ""
+		}
+	});
+});
 
 
 // admin post movie
-router.post("/write/type/:type",function(req,res){
-	var type = req.params.type;
-	// 判断是否是新加或者是更新的数据
-	var id = req.body.movie._id;
-	var movieObj = req.body.data;
-    console.log(movieObj)
-	var _movie;
-
-	if(id !== "undefined"){
-        Data.findById(id, function(err, movie){
-			if(err){
-				console.log(err);
-			}
-
-			//替换老的数据
-			_movie = _.extend(movie, movieObj);
-			_movie.save(function(err, movie){
-				if(err){
-					console.log(err);
-				}
-
-				//重定向到详情页面
-				res.redirect("/write/type/"+type);
-			});
-		});
-	} else {
-
-		// 新加的数据
-		_movie = new Data({
-			img: movieObj.img,
-			url: movieObj.url,
-			title: movieObj.title,
-			id: movieObj.id,
-			time: movieObj.time
-		});
-
-		_movie.save(function(err,movie){
-			if(err){
-				console.log(err);
-			}
-
-			//重定向到详情页面
-			res.redirect("/write/type/"+type);
-		});
-	}
-});
+//router.post("/write/type/:type",function(req,res){
+//	if(!req.session.user){
+//		return res.send({
+//			status: 0,
+//			info: '未鉴权认证'
+//		});
+//	}
+//	var type = req.params.type;
+//	// 判断是否是新加或者是更新的数据
+//	var id = req.body.movie._id;
+//	var movieObj = req.body.data;
+//	if(!movieObj ){
+//        return res.send({
+//            status: 0,
+//            info: '提交的字段不全'
+//        });
+//    }
+//
+//	var _movie;
+//
+//	if(id !== "undefined"){
+//        Data.findById(id, function(err, movie){
+//			if(err){
+//				console.log(err);
+//			}
+//
+//			//替换老的数据
+//			_movie = _.extend(movie, movieObj);
+//			_movie.save(function(err, movie){
+//				if(err){
+//					console.log(err);
+//				}
+//
+//				//重定向到详情页面
+//				res.redirect("/write/type/"+type);
+//			});
+//		});
+//	} else {
+//
+//		// 新加的数据
+//		_movie = new Data({
+//			img: movieObj.img,
+//			url: movieObj.url,
+//			title: movieObj.title,
+//			id: movieObj.id,
+//			time: movieObj.time
+//		});
+//
+//		_movie.save(function(err,movie){
+//			if(err){
+//				console.log(err);
+//			}
+//
+//			//重定向到详情页面
+//			res.redirect("/write/type/"+type);
+//		});
+//	}
+//});
 
 //读取数据模块
 router.get("/read/type/:type",function(req,res){
@@ -81,11 +100,22 @@ router.get("/read/type/:type",function(req,res){
 			console.log(err)
 		}
 
-		//渲染页面
-		res.render({
-			status: 1,
-			data: data
-		});
+		//分页
+		var COUNT = 50;
+        //TODO: try
+        var obj = [];
+        try{
+            obj = JSON.parse(data.toString());
+        }catch(e){
+            obj = [ ];
+        }
+        if(obj.length > COUNT){
+            obj = obj.slice(0, COUNT);
+        }
+        return res.send({
+            status: 1,
+            data: obj
+        });
 	});
 });
 

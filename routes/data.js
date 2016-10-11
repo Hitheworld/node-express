@@ -3,7 +3,7 @@ var router = express.Router();
 var fs = require('fs');
 var xss = require('xss');
 
-var guidGenerate = require('../utils/GuidGenerate');
+var guidGenerate = require('../utils/guid.util');
 var PATH = './public/data/';
 
 //读取数据模块
