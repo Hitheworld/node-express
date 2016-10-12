@@ -7,35 +7,8 @@ var router = express.Router();
 var fs = require('fs');
 var xss = require('xss');
 var _ = require("underscore");
-//var bodyParser = require('body-parser');
-//
-//router.use(bodyParser.json());
-//router.use(bodyParser.urlencoded({ extended: true }));
 
 var Data = require("../models/data.model");
-var guidGenerate = require('../utils/guid.util');
-
-/*后台管理-详情页-添加数据*/
-router.get("/write/type",function(req,res){
-	if(!req.session.user){
-		return res.send({
-			status: 0,
-			info: '未鉴权认证'
-		});
-	}
-
-	return res.send({
-		status: 1,
-		data:{
-			img: "",
-			url: "",
-			title: "",
-			id: "",
-			time: ""
-		}
-	});
-});
-
 
 // admin post movie
 router.post("/write/type/:type",function(req,res){
