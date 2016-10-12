@@ -21,11 +21,16 @@ router.post("/write/type/:type",function(req,res){
 	var type = req.params.type;
 	console.log("----------------------type++++:", type);
 	// 判断是否是新加或者是更新的数据
-	var id = req.body.data._id;
+	//var id = req.body.data._id;
+    var id = req.param('_id') || '';
 	console.log("----------------------_id++++:", id);
-	var movieObj = req.body.data;
-	console.log("----------------------write 22222222");
-	if(!movieObj ){
+	//var movieObj = req.body.data;
+    //关键字段
+    var url = req.param('url') || '';
+    var title = req.param('title') || '';
+    var img = req.param('img') || '';
+	console.log("----------------------write 22222222:"+url+",title:"+title+",img:"+img);
+	if(!type || !url || !title || !img ){
         return res.send({
             status: 0,
             info: '提交的字段不全'
@@ -41,6 +46,9 @@ router.post("/write/type/:type",function(req,res){
 				console.log(err);
 			}
 
+            var movieObj = {
+                    type: type,url:url,title:title,img:img
+            }
 			//替换老的数据
 			_movie = _.extend(movie, movieObj);
 			_movie.save(function(err, movie){
